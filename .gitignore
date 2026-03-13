@@ -1,0 +1,8 @@
+.env
+models/
+.rasa/
+.config/
+__pycache__/
+*.pyc
+*.tar.gz
+.keras/
