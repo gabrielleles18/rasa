@@ -1,91 +1,112 @@
 version: "3.1"
 
 nlu:
-- intent: greet
+- intent: saudacao
   examples: |
+    - oi
+    - ola
+    - bom dia
+    - boa tarde
+    - boa noite
     - hey
+    - eai
+    - e ai
+    - fala
+    - opa
+    - salve
     - hello
     - hi
-    - hello there
-    - good morning
-    - good evening
-    - moin
-    - hey there
-    - let's go
-    - hey dude
-    - goodmorning
-    - goodevening
-    - good afternoon
+    - oie
+    - oi boa tarde
+    - oi bom dia
+    - oi boa noite
 
-- intent: goodbye
+- intent: despedida
   examples: |
-    - cu
-    - good by
-    - cee you later
-    - good night
+    - tchau
+    - ate logo
+    - ate mais
+    - falou
+    - adeus
     - bye
-    - goodbye
-    - have a nice day
-    - see you around
-    - bye bye
-    - see you later
+    - xau
+    - tchau tchau
+    - ate a proxima
+    - fui
 
-- intent: affirm
+- intent: registrar_manifestacao
   examples: |
-    - yes
-    - y
-    - indeed
-    - of course
-    - that sounds good
-    - correct
+    - 1
+    - registrar manifestacao
+    - quero registrar uma manifestacao
+    - fazer manifestacao
+    - nova manifestacao
+    - abrir manifestacao
+    - quero fazer uma denuncia
+    - quero fazer uma reclamacao
+    - quero registrar uma denuncia
+    - quero registrar uma reclamacao
+    - quero fazer uma sugestao
+    - quero fazer um elogio
+    - fazer denuncia
+    - fazer reclamacao
+    - fazer sugestao
+    - fazer elogio
+    - registrar denuncia
+    - registrar reclamacao
+    - registrar sugestao
+    - registrar elogio
+    - manifestacao
+    - ouvidoria
+    - quero abrir uma manifestacao
+    - gostaria de registrar uma manifestacao
+    - preciso fazer uma denuncia
+    - preciso registrar uma reclamacao
+    - solicitar servico
+    - solicitacao de servico
+    - quero solicitar um servico
 
-- intent: deny
+- intent: acompanhar_manifestacao
   examples: |
-    - no
-    - n
-    - never
-    - I don't think so
-    - don't like that
-    - no way
-    - not really
+    - 2
+    - acompanhar manifestacao
+    - quero acompanhar uma manifestacao
+    - quero saber o status de uma manifestacao
+    - quero saber o status de uma denuncia
+    - quero saber o status de uma reclamacao
+    - quero saber o status de uma sugestao
+    - quero saber o status de um elogio
+    - quero saber o status de uma solicitacao de servico
+    - acompanhar denuncia
+    - acompanhar reclamacao
+    - acompanhar sugestao
+    - acompanhar elogio
+    - acompanhar solicitacao de servico
+    - consultar manifestacao
+    - ver status
 
-- intent: mood_great
+- intent: agradecimento
   examples: |
-    - perfect
-    - great
-    - amazing
-    - feeling like a king
-    - wonderful
-    - I am feeling very good
-    - I am great
-    - I am amazing
-    - I am going to save the world
-    - super stoked
-    - extremely good
-    - so so perfect
-    - so good
-    - so perfect
+    - obrigado
+    - obrigada
+    - muito obrigado
+    - muito obrigada
+    - brigado
+    - brigada
+    - valeu
+    - valeu muito
+    - vlw
+    - agradeco
 
-- intent: mood_unhappy
+- intent: finalizacao
   examples: |
-    - my day was horrible
-    - I am sad
-    - I don't feel very well
-    - I am disappointed
-    - super sad
-    - I'm so sad
-    - sad
-    - very sad
-    - unhappy
-    - not good
-    - not very good
-    - extremly sad
-    - so saad
-    - so sad
-
-- intent: bot_challenge
-  examples: |
-    - are you a bot?
-    - are you a human?
-    - am I talking to a bot?
-    - am I talking to a human?
+    - cancelar
+    - cancelar conversa
+    - encerrar
+    - encerrar conversa
+    - finalizar
+    - finalizar conversa
+    - nao quero encerrar a conversa
+    - nao preciso de mais nada
+    - sair
+    - exit

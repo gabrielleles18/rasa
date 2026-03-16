@@ -238,3 +238,15 @@ Consulte o [Changelog do Rasa Pro](https://rasa.com/docs/rasa-pro/changelog) par
 | `DNS timeout` ao fazer build | Configure DNS no Docker: adicione `{"dns": ["8.8.8.8"]}` em `/etc/docker/daemon.json` e reinicie com `sudo systemctl restart docker` |
 | `RASA_LICENSE` inválida | Verifique se o `.env` contém a chave correta |
 | Erro ao baixar TensorFlow (~586MB) | Sua conexão pode estar lenta; tente novamente ou use uma rede mais estável |
+
+
+
+
+# Retreinar o modelo com as alterações
+docker exec -it rasa-rasa-1 rasa train
+
+# Subir o action-server (que não está rodando)
+docker compose up -d --build action-server
+
+# Reiniciar o rasa para carregar o novo modelo
+docker compose restart rasa

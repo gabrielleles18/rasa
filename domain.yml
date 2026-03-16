@@ -1,34 +1,242 @@
 version: "3.1"
 
 intents:
-  - greet
-  - goodbye
-  - affirm
-  - deny
-  - mood_great
-  - mood_unhappy
-  - bot_challenge
+  - saudacao
+  - despedida
+  - registrar_manifestacao
+  - acompanhar_manifestacao
+  - agradecimento
+  - finalizacao
+  - nlu_fallback
+
+slots:
+  tipo_manifestacao:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: tipo_manifestacao
+
+  assunto_manifestacao:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: assunto_manifestacao
+
+  mensagem_manifestacao:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: mensagem_manifestacao
+
+  sigilo:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: sigilo
+
+  tipo_documento:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: tipo_documento
+
+  numero_documento:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: numero_documento
+
+  confirma_anonimo:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: confirma_anonimo
+
+  confirma_dados:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: confirma_dados
+
+  nome_completo:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: nome_completo
+
+  email:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: email
+
+  telefone:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: telefone
+
+  quer_anexo:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: quer_anexo
+
+  anexos:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: anexos
+
+  lista_anexos:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  confirma_envio:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: manifestacao_form
+            requested_slot: confirma_envio
+
+  eh_anonimo:
+    type: bool
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  pessoa_encontrada:
+    type: bool
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  dados_pessoa:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  pessoa_id:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  codigo_acesso:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  lista_tipos:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  lista_assuntos:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+forms:
+  manifestacao_form:
+    required_slots:
+      - tipo_manifestacao
+      - assunto_manifestacao
+      - mensagem_manifestacao
+      - quer_anexo
+      - anexos
+      - sigilo
+      - tipo_documento
+      - numero_documento
+      - confirma_anonimo
+      - confirma_dados
+      - nome_completo
+      - email
+      - telefone
+      - confirma_envio
+
+actions:
+  - action_greet
+  - action_ask_tipo_manifestacao
+  - action_ask_assunto_manifestacao
+  - action_ask_mensagem_manifestacao
+  - action_ask_quer_anexo
+  - action_ask_anexos
+  - action_ask_sigilo
+  - action_ask_tipo_documento
+  - action_ask_numero_documento
+  - action_ask_confirma_anonimo
+  - action_ask_confirma_dados
+  - action_ask_nome_completo
+  - action_ask_email
+  - action_ask_telefone
+  - action_ask_confirma_envio
+  - action_enviar_manifestacao
+  - validate_manifestacao_form
 
 responses:
-  utter_greet:
-  - text: "Hey! How are you?"
+  utter_despedida:
+    - text: "Ate logo! Se precisar, estou por aqui."
 
-  utter_cheer_up:
-  - text: "Here is something to cheer you up:"
-    image: "https://i.imgur.com/nGF1K8f.jpg"
+  utter_acompanhar_manifestacao:
+    - text: "Para acompanhar uma manifestacao, informe seu protocolo de atendimento."
 
-  utter_did_that_help:
-  - text: "Did that help you?"
+  utter_agradecimento:
+    - text: "De nada! Estou aqui para ajudar.\n\n1 - Registrar Manifestacao\n2 - Acompanhar Manifestacao"
 
-  utter_happy:
-  - text: "Great, carry on!"
+  utter_finalizacao:
+    - text: "Tenha um otimo dia! Ate a proxima."
 
-  utter_goodbye:
-  - text: "Bye"
-
-  utter_iamabot:
-  - text: "I am a bot, powered by Rasa."
+  utter_default:
+    - text: "Desculpe, nao entendi. Poderia reformular?\n\nDigite 1 para Registrar Manifestacao ou 2 para Acompanhar Manifestacao."
 
 session_config:
   session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+  carry_over_slots_to_new_session: false

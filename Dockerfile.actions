@@ -1,0 +1,8 @@
+FROM rasa/rasa-sdk:3.10.1
+
+USER root
+COPY actions/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+USER 1001
+COPY actions /app/actions

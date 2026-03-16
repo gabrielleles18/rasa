@@ -2,29 +2,50 @@ version: "3.1"
 
 stories:
 
-- story: happy path
+- story: saudacao seguida de registro
   steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: mood_great
-  - action: utter_happy
+    - intent: saudacao
+    - action: action_greet
+    - intent: registrar_manifestacao
+    - action: manifestacao_form
+    - active_loop: manifestacao_form
 
-- story: sad path 1
+- story: registro completo e despedida
   steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - intent: affirm
-  - action: utter_happy
+    - intent: registrar_manifestacao
+    - action: manifestacao_form
+    - active_loop: manifestacao_form
+    - active_loop: null
+    - action: action_enviar_manifestacao
+    - intent: despedida
+    - action: utter_despedida
 
-- story: sad path 2
+- story: saudacao registro completo e despedida
   steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - intent: deny
-  - action: utter_goodbye
+    - intent: saudacao
+    - action: action_greet
+    - intent: registrar_manifestacao
+    - action: manifestacao_form
+    - active_loop: manifestacao_form
+    - active_loop: null
+    - action: action_enviar_manifestacao
+    - intent: despedida
+    - action: utter_despedida
+
+- story: saudacao e despedida sem registro
+  steps:
+    - intent: saudacao
+    - action: action_greet
+    - intent: despedida
+    - action: utter_despedida
+
+- story: registro completo e nova manifestacao
+  steps:
+    - intent: registrar_manifestacao
+    - action: manifestacao_form
+    - active_loop: manifestacao_form
+    - active_loop: null
+    - action: action_enviar_manifestacao
+    - intent: registrar_manifestacao
+    - action: manifestacao_form
+    - active_loop: manifestacao_form
