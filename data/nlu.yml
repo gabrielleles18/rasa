@@ -37,52 +37,52 @@ nlu:
 - intent: registrar_manifestacao
   examples: |
     - 1
-    - registrar manifestacao
-    - quero registrar uma manifestacao
-    - fazer manifestacao
-    - nova manifestacao
-    - abrir manifestacao
-    - quero fazer uma denuncia
-    - quero fazer uma reclamacao
-    - quero registrar uma denuncia
-    - quero registrar uma reclamacao
-    - quero fazer uma sugestao
+    - registrar manifestação
+    - quero registrar uma manifestação
+    - fazer manifestação
+    - nova manifestação
+    - abrir manifestação
+    - quero fazer uma denúncia
+    - quero fazer uma reclamação
+    - quero registrar uma denúncia
+    - quero registrar uma reclamação
+    - quero fazer uma sugestão
     - quero fazer um elogio
-    - fazer denuncia
-    - fazer reclamacao
-    - fazer sugestao
+    - fazer denúncia
+    - fazer reclamação
+    - fazer sugestão
     - fazer elogio
-    - registrar denuncia
-    - registrar reclamacao
-    - registrar sugestao
+    - registrar denúncia
+    - registrar reclamação
+    - registrar sugestão
     - registrar elogio
-    - manifestacao
+    - manifestação
     - ouvidoria
-    - quero abrir uma manifestacao
-    - gostaria de registrar uma manifestacao
-    - preciso fazer uma denuncia
-    - preciso registrar uma reclamacao
-    - solicitar servico
-    - solicitacao de servico
-    - quero solicitar um servico
+    - quero abrir uma manifestação
+    - gostaria de registrar uma manifestação
+    - preciso fazer uma denúncia
+    - preciso registrar uma reclamação
+    - solicitar serviço
+    - solicitação de serviço
+    - quero solicitar um serviço
 
 - intent: acompanhar_manifestacao
   examples: |
     - 2
-    - acompanhar manifestacao
-    - quero acompanhar uma manifestacao
-    - quero saber o status de uma manifestacao
+    - acompanhar manifestação
+    - quero acompanhar uma manifestação
+    - quero saber o status de uma manifestação
     - quero saber o status de uma denuncia
-    - quero saber o status de uma reclamacao
-    - quero saber o status de uma sugestao
+    - quero saber o status de uma reclamação
+    - quero saber o status de uma sugestão
     - quero saber o status de um elogio
-    - quero saber o status de uma solicitacao de servico
-    - acompanhar denuncia
-    - acompanhar reclamacao
-    - acompanhar sugestao
+    - quero saber o status de uma solicitação
+    - acompanhar denúncia
+    - acompanhar reclamação
+    - acompanhar sugestão
     - acompanhar elogio
-    - acompanhar solicitacao de servico
-    - consultar manifestacao
+    - acompanhar solicitação de serviço
+    - consultar manifestação
     - ver status
 
 - intent: agradecimento

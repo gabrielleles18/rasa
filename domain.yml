@@ -223,19 +223,19 @@ actions:
 
 responses:
   utter_despedida:
-    - text: "Ate logo! Se precisar, estou por aqui."
+    - text: "Até logo! Se precisar, estou por aqui."
 
   utter_acompanhar_manifestacao:
-    - text: "Para acompanhar uma manifestacao, informe seu protocolo de atendimento."
+    - text: "Para acompanhar uma manifestação, informe seu protocolo de atendimento."
 
   utter_agradecimento:
-    - text: "De nada! Estou aqui para ajudar.\n\n1 - Registrar Manifestacao\n2 - Acompanhar Manifestacao"
+    - text: "De nada! Estou aqui para ajudar."
 
   utter_finalizacao:
-    - text: "Tenha um otimo dia! Ate a proxima."
+    - text: "Tenha um otimo dia! Até a próxima."
 
   utter_default:
-    - text: "Desculpe, nao entendi. Poderia reformular?\n\nDigite 1 para Registrar Manifestacao ou 2 para Acompanhar Manifestacao."
+    - text: "Desculpe, nao entendi. Poderia reformular?\n\nDigite 1 para Registrar Manifestação ou 2 para Acompanhar Manifestação."
 
 session_config:
   session_expiration_time: 60

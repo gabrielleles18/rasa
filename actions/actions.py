@@ -36,7 +36,12 @@ def _extrair_midia_whatsapp(tracker: "Tracker") -> Optional[Dict]:
 
     return None
 
-MENU_OPCOES = "1 - Registrar Manifestacao\n2 - Acompanhar Manifestacao"
+MENU_OPCOES = "1 - Registrar Manifestação\n2 - Acompanhar Manifestação"
+MENU_OPCOES_2 = [
+    {"id": 1, "titulo": "Nova Manifestação"},
+    {"id": 2, "titulo": "Ver Manifestação"},
+    {"id": 3, "titulo": "Sair"},
+]
 
 SAUDACOES = {
     "bom dia": "Bom dia!",
@@ -68,42 +73,76 @@ class ActionGreet(Action):
             if chave in msg:
                 saudacao = resposta
                 break
-
         dispatcher.utter_message(
-            text=f"{saudacao} Sou o assistente virtual da Ouvidoria. Como posso ajudar?\n\n{MENU_OPCOES}"
+            json_message={
+                "opcoes": MENU_OPCOES_2,
+                "mensagem": f"{saudacao} Sou o assistente virtual da Ouvidoria. Como posso ajudar?",
+                "tipo_msn": "interactive-reply"
+            }
         )
         return []
 
-TIPOS_MANIFESTACAO = {
-    "1": {"id": 1, "nome": "Denuncia"},
-    "2": {"id": 2, "nome": "Reclamacao"},
-    "3": {"id": 3, "nome": "Sugestao"},
-    "4": {"id": 4, "nome": "Elogio"},
-    "5": {"id": 5, "nome": "Solicitacao de Servico"},
-}
+TIPOS_MANIFESTACAO = [
+    {"id": 1, "titulo": "Denúncia"},
+    {"id": 2, "titulo": "Reclamação"},
+    {"id": 3, "titulo": "Sugestão"},
+    {"id": 4, "titulo": "Elogio"},
+    {"id": 5, "titulo": "Solicitação"},
+]
 
-TIPOS_DOCUMENTO = {
-    "1": {"valor": "CPF", "nome": "CPF"},
-    "2": {"valor": "CNPJ", "nome": "CNPJ"},
-    "3": {"valor": "anonimo", "nome": "Anonimo"},
-    "4": {"valor": "RG", "nome": "RG"},
-    "5": {"valor": "CNH", "nome": "CNH"},
-    "6": {"valor": "Outro", "nome": "Outro"},
-}
+TIPOS_DOCUMENTO = [
+    {"id": 1, "titulo": "CPF"},
+    {"id": 2, "titulo": "CNPJ"},
+    {"id": 3, "titulo": "RG"},
+    {"id": 4, "titulo": "Registro Profissional"},
+    {"id": 5, "titulo": "CNH"},
+    {"id": 6, "titulo": "Outro"},
+]
 
-ASSUNTOS_MANIFESTACAO = {
-    "1": {"id": 1, "nome": "Proteção e Benefícios ao Trabalhador"},
-    "2": {"id": 2, "nome": "Receita"},
-    "3": {"id": 3, "nome": "Serviços e Sistemas"},
-    "4": {"id": 4, "nome": "Segurança e Saúde do Trabalho"},
-    "5": {"id": 5, "nome": "Agricultura e Produção Orgânica"},
-}
+ASSUNTOS_MANIFESTACAO = [
+    {"id": 1, "titulo": "Proteção e Benefícios"},
+    {"id": 2, "titulo": "Receita"},
+    {"id": 3, "titulo": "Serviços e Sistemas"},
+    {"id": 4, "titulo": "Saúde"},
+    {"id": 5, "titulo": "Agricultura"},
+    {"id": 6, "titulo": "Imposto"},
+]
 
+def _resolver_tipo_documento_id(valor: str) -> Optional[int]:
+    """Resolve um valor (id ou título) para o id interno do tipo de documento."""
+    valor_norm = valor.strip().lower()
+    if not valor_norm:
+        return None
+
+    for item in TIPOS_DOCUMENTO:
+        if str(item["id"]) == valor_norm or item["titulo"].lower() == valor_norm:
+            return item["id"]
+
+    return None
+
+def _resolver_assunto_id(valor: str) -> Optional[int]:
+    """Resolve um valor (id ou título) para o id interno do assunto."""
+    valor_norm = valor.strip().lower()
+    if not valor_norm:
+        return None
+
+    for item in ASSUNTOS_MANIFESTACAO:
+        if str(item["id"]) == valor_norm or item["titulo"].lower() == valor_norm:
+            return item["id"]
+
+    return None
 
 def _resolver_tipo_id(valor: str) -> Optional[int]:
-    valor_lower = valor.strip().lower()
-    if valor_lower in TIPOS_MANIFESTACAO:
-        return TIPOS_MANIFESTACAO[valor_lower]["id"]
+    """Resolve um valor (id ou título) para o id interno do tipo."""
+    valor_norm = valor.strip().lower()
+    if not valor_norm:
+        return None
+
+    for item in TIPOS_MANIFESTACAO:
+        # compara tanto pelo id quanto pelo título
+        if str(item["id"]) == valor_norm or item["titulo"].lower() == valor_norm:
+            return item["id"]
+
     return None
 
 
@@ -116,9 +155,11 @@ def _resolver_tipo_doc(valor: str) -> Optional[str]:
         "cpf": "CPF",
         "cnpj": "CNPJ",
         "rg": "RG",
+        "registro_profissional": "Registro Profissional",
         "cnh": "CNH",
         "outro": "Outro",
     }
+
     for chave, doc_val in mapa.items():
         if chave in valor_lower:
             return doc_val
@@ -133,11 +174,14 @@ class ActionAskTipoManifestacao(Action):
         return "action_ask_tipo_manifestacao"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
-        
         events = []
-        opcoes = "\n".join([f"{k} - {v['nome']}" for k, v in TIPOS_MANIFESTACAO.items()])
-
-        dispatcher.utter_message(text=f"Qual o tipo de manifestacao?\n\n{opcoes}")
+        dispatcher.utter_message(
+            json_message={
+                "opcoes": TIPOS_MANIFESTACAO,
+                "mensagem": "Qual o tipo de manifestação?",
+                "tipo_msn": "interactive"
+            }
+        )
         return events
 
 
@@ -146,8 +190,13 @@ class ActionAskAssuntoManifestacao(Action):
         return "action_ask_assunto_manifestacao"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
-        opcoes = "\n".join([f"{k} - {v['nome']}" for k, v in ASSUNTOS_MANIFESTACAO.items()])
-        dispatcher.utter_message(text=f"Qual o assunto da manifestacao?\n\n{opcoes}")
+        dispatcher.utter_message(
+            json_message={
+                "opcoes": ASSUNTOS_MANIFESTACAO,
+                "mensagem": "Qual o assunto da manifestação?",
+                "tipo_msn": "interactive"
+            },
+        )
         return []
 
 
@@ -156,7 +205,7 @@ class ActionAskMensagemManifestacao(Action):
         return "action_ask_mensagem_manifestacao"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(text="Descreva sua manifestacao (minimo 10 caracteres):")
+        dispatcher.utter_message(text="Descreva sua manifestação (mínimo 10 caracteres):")
         return []
 
 
@@ -166,7 +215,11 @@ class ActionAskQuerAnexo(Action):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
         dispatcher.utter_message(
-            text="Deseja anexar arquivo(s) a esta manifestacao?\n\n1 - Sim\n2 - Nao"
+            json_message={
+                "opcoes": [{"id": 1, "titulo": "Sim"}, {"id": 2, "titulo": "Não"}],
+                "mensagem": "Deseja anexar arquivo(s) a esta manifestação?",
+                "tipo_msn": "interactive-reply"
+            }
         )
         return []
 
@@ -184,7 +237,7 @@ class ActionAskAnexos(Action):
             )
         else:
             dispatcher.utter_message(
-                text="Envie o arquivo (imagem, documento, etc.).\nVoce pode enviar varios, um de cada vez.\n\nQuando terminar, digite *pronto*."
+                text="Envie o arquivo (imagem, documento, etc.).\nVocê pode enviar vários, um de cada vez.\n\nQuando terminar, digite *pronto*."
             )
         return []
 
@@ -194,7 +247,13 @@ class ActionAskSigilo(Action):
         return "action_ask_sigilo"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(text="Deseja preservar sua identidade (sigilo)?\n\n1 - Sim\n2 - Nao")
+        dispatcher.utter_message(
+            json_message={
+                "opcoes": [{"id": 1, "titulo": "Sim"}, {"id": 2, "titulo": "Não"}],
+                "mensagem": "Deseja preservar sua identidade (sigilo)?",
+                "tipo_msn": "interactive-reply"
+            }
+        )
         return []
 
 
@@ -203,8 +262,13 @@ class ActionAskTipoDocumento(Action):
         return "action_ask_tipo_documento"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
-        opcoes = "\n".join([f"{k} - {v['nome']}" for k, v in TIPOS_DOCUMENTO.items()])
-        dispatcher.utter_message(text=f"Qual o tipo de documento?\n\n{opcoes}")
+        dispatcher.utter_message(
+            json_message={
+                "opcoes": TIPOS_DOCUMENTO,
+                "mensagem": "Qual o tipo de documento?",
+                "tipo_msn": "interactive"
+            }
+        )
         return []
 
 
@@ -223,7 +287,7 @@ class ActionAskConfirmaAnonimo(Action):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
         dispatcher.utter_message(
-            text="Ao enviar como anonimo, voce nao precisara se identificar.\nConfirma o envio anonimo?\n\n1 - Sim\n2 - Nao"
+            text="Ao enviar como anonimo, você não precisara se identificar.\nConfirma o envio anonimo?\n\n1 - Sim\n2 - Não"
         )
         return []
 
@@ -238,7 +302,7 @@ class ActionAskConfirmaDados(Action):
         email = dados.get("email", "N/A")
 
         dispatcher.utter_message(
-            text=f"Encontramos seu cadastro:\n\nNome: {nome}\nE-mail: {email}\n\nOs dados estao corretos?\n\n1 - Sim\n2 - Nao"
+            text=f"Encontramos seu cadastro:\n\nNome: {nome}\nE-mail: {email}\n\nOs dados estão corretos?\n\n1 - Sim\n2 - Não"
         )
         return []
 
@@ -275,28 +339,74 @@ class ActionAskConfirmaEnvio(Action):
         return "action_ask_confirma_envio"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict) -> List[Dict[Text, Any]]:
-        tipo_id = _resolver_tipo_id(tracker.get_slot("tipo_manifestacao") or "")
-        tipo_nome = TIPOS_MANIFESTACAO.get(str(tipo_id), {}).get("nome", tracker.get_slot("tipo_manifestacao"))
+        # Recupera o id do tipo a partir do valor armazenado no slot
+        tipo_raw = tracker.get_slot("tipo_manifestacao") or ""
+        tipo_id = _resolver_tipo_id(str(tipo_raw))
 
-        assunto = tracker.get_slot("assunto_manifestacao") or ""
-        assunto_nome = ASSUNTOS_MANIFESTACAO.get(assunto, {}).get("nome", assunto)
+        tipo_nome = str(tipo_raw)
+        if tipo_id is not None:
+            for item in TIPOS_MANIFESTACAO:
+                if item["id"] == tipo_id:
+                    tipo_nome = item["titulo"]
+                    break
+
+        # Recupera o id do assunto a partir do valor armazenado no slot
+        assunto_raw = tracker.get_slot("assunto_manifestacao") or ""
+        assunto_id = _resolver_assunto_id(str(assunto_raw))
+
+        assunto_nome = str(assunto_raw)
+        if assunto_id is not None:
+            for item in ASSUNTOS_MANIFESTACAO:
+                if item["id"] == assunto_id:
+                    assunto_nome = item["titulo"]
+                    break
 
         mensagem = tracker.get_slot("mensagem_manifestacao") or ""
         resumo_msg = mensagem[:80] + "..." if len(mensagem) > 80 else mensagem
 
         lista_anexos = tracker.get_slot("lista_anexos") or []
         total_anexos = len(lista_anexos)
-        anexos_txt = f"Anexos: {total_anexos} arquivo(s)" if total_anexos > 0 else "Anexos: nenhum"
+        anexos_txt = f"*Anexos*: {total_anexos} arquivo(s)" if total_anexos > 0 else "*Anexos*: nenhum(s)"
 
-        texto = (
-            f"Resumo da manifestacao:\n\n"
-            f"Tipo: {tipo_nome}\n"
-            f"Assunto: {assunto_nome}\n"
-            f"Mensagem: {resumo_msg}\n"
-            f"{anexos_txt}\n\n"
-            f"Confirma o envio?\n\n1 - Sim\n2 - Nao (cancelar)"
+        eh_sigilo = tracker.get_slot("sigilo") == "1"
+        nome = tracker.get_slot("nome_completo") or ""
+        email = tracker.get_slot("email") or ""
+        telefone = tracker.get_slot("telefone") or ""
+        numero_documento = tracker.get_slot("numero_documento") or ""
+
+        texto_usuario = (
+            f"*Nome*: {nome}\n" +
+            f"*E-mail*: {email}\n" +
+            f"*Telefone*: {telefone}\n" +
+            f"*Número do documento*: {numero_documento}\n"
         )
+        
+        if eh_sigilo:
+            texto = (
+            f"*Resumo da manifestação*:\n\n"
+            f"*Tipo*: {tipo_nome}\n"
+            f"*Assunto*: {assunto_nome}\n"    
+            f"*Mensagem*: {resumo_msg}\n"
+            f"{anexos_txt}\n\n"
+        )
+        else:
+            texto = (
+            f"*Resumo da manifestação*:\n\n"
+            f"*Tipo*: {tipo_nome}\n"
+            f"*Assunto*: {assunto_nome}\n"    
+            f"*Mensagem*: {resumo_msg}\n\n"
+            f"{texto_usuario}\n"
+            f"{anexos_txt}\n\n"
+        )
+        
         dispatcher.utter_message(text=texto)
+        dispatcher.utter_message(
+            json_message={
+                "opcoes": [{"id": 1, "titulo": "Sim"}, {"id": 2, "titulo": "Não"}],
+                "mensagem": "Confirma o envio da manifestação?",
+                "tipo_msn": "interactive-reply"
+            }
+        )
         return []
 
 
@@ -355,21 +465,34 @@ class ValidateManifestacaoForm(FormValidationAction):
     def validate_tipo_manifestacao(
         self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
-        tipo_id = _resolver_tipo_id(str(slot_value))
-        if tipo_id:
-            return {"tipo_manifestacao": str(slot_value)}
+        valor = str(slot_value).strip()
+        if not valor:
+            return {"tipo_manifestacao": None}
 
-        dispatcher.utter_message(text="Opcao invalida. Por favor, escolha um numero de 1 a 5.")
+        # Tenta resolver para um id válido (aceita tanto "1" quanto "Denúncia")
+        tipo_id = _resolver_tipo_id(valor)
+        if tipo_id is not None:
+            logger.info(f"TIPO ENCONTRADO: valor='{valor}' -> id={tipo_id}")
+            # guarda o id como string no slot
+            return {"tipo_manifestacao": str(tipo_id)}
+
+        dispatcher.utter_message(text="Opção inválida. Escolha uma das opções abaixo:" )
         return {"tipo_manifestacao": None}
 
     def validate_assunto_manifestacao(
         self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
         valor = str(slot_value).strip()
-        if valor in ASSUNTOS_MANIFESTACAO:
-            return {"assunto_manifestacao": valor}
+        if not valor:
+            return {"assunto_manifestacao": None}
 
-        dispatcher.utter_message(text=f"Opcao invalida. Escolha um numero de 1 a {len(ASSUNTOS_MANIFESTACAO)}.")
+        assunto_id = _resolver_assunto_id(valor)
+        if assunto_id is not None:
+            logger.warning(f"ASSUNTO ENCONTRADO: valor='{valor}' -> id={assunto_id}")
+            # guarda sempre o id em formato string
+            return {"assunto_manifestacao": str(assunto_id)}
+
+        dispatcher.utter_message(text="Opção inválida. Escolha uma das opções abaixo:" )
         return {"assunto_manifestacao": None}
 
     def validate_mensagem_manifestacao(
@@ -378,7 +501,7 @@ class ValidateManifestacaoForm(FormValidationAction):
         if slot_value and len(str(slot_value).strip()) >= 10:
             return {"mensagem_manifestacao": str(slot_value)}
 
-        dispatcher.utter_message(text="A mensagem deve ter no minimo 10 caracteres. Tente novamente.")
+        dispatcher.utter_message(text="A mensagem deve ter no mínimo 10 caracteres. Tente novamente.")
         return {"mensagem_manifestacao": None}
 
     def validate_quer_anexo(
@@ -387,10 +510,10 @@ class ValidateManifestacaoForm(FormValidationAction):
         valor = str(slot_value).strip().lower()
         if valor in ("1", "sim", "s"):
             return {"quer_anexo": "1", "lista_anexos": []}
-        if valor in ("2", "nao", "n"):
+        if valor in ("2", "não", "n"):
             return {"quer_anexo": "0", "anexos": "sem_anexo", "lista_anexos": []}
 
-        dispatcher.utter_message(text="Opcao invalida. Digite 1 para Sim ou 2 para Nao.")
+        dispatcher.utter_message(text="Opção inválida. Digite 1 para Sim ou 2 para Não.")
         return {"quer_anexo": None}
 
     def validate_anexos(
@@ -408,12 +531,12 @@ class ValidateManifestacaoForm(FormValidationAction):
             return {"anexos": None, "lista_anexos": lista}
 
         valor = str(slot_value).strip().lower()
-        if valor in ("pronto", "ok", "finalizar", "continuar", "2", "nao", "n"):
+        if valor in ("pronto", "ok", "finalizar", "continuar", "2", "não", "n"):
             total = len(lista)
             if total > 0:
                 dispatcher.utter_message(text=f"{total} arquivo(s) anexado(s).")
             else:
-                dispatcher.utter_message(text="Nenhum arquivo anexado.")
+                dispatcher.utter_message(text="Nenhum arquivo anexado(s).")
             return {"anexos": "concluido", "lista_anexos": lista}
 
         dispatcher.utter_message(
@@ -427,10 +550,10 @@ class ValidateManifestacaoForm(FormValidationAction):
         valor = str(slot_value).strip().lower()
         if valor in ("1", "sim", "s", "quero"):
             return {"sigilo": "1"}
-        if valor in ("2", "nao", "n", "nao quero"):
+        if valor in ("2", "não", "n", "não quero"):
             return {"sigilo": "0"}
 
-        dispatcher.utter_message(text="Opcao invalida. Digite 1 para Sim ou 2 para Nao.")
+        dispatcher.utter_message(text="Opção inválida. Digite 1 para Sim ou 2 para Não.")
         return {"sigilo": None}
 
     def validate_tipo_documento(
@@ -441,20 +564,49 @@ class ValidateManifestacaoForm(FormValidationAction):
             eh_anonimo = doc == "anonimo"
             return {"tipo_documento": str(slot_value), "eh_anonimo": eh_anonimo}
 
-        dispatcher.utter_message(text="Opcao invalida. Escolha um numero de 1 a 6.")
+        dispatcher.utter_message(text="Opção inválida. Escolha um número de 1 a 6.")
         return {"tipo_documento": None}
 
     def validate_numero_documento(
         self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
-        numero = re.sub(r"[^0-9a-zA-Z]", "", str(slot_value).strip())
+        valor_bruto = str(slot_value).strip()
+        numero = re.sub(r"[^0-9a-zA-Z]", "", valor_bruto)
 
-        if len(numero) < 3:
-            dispatcher.utter_message(text="Numero de documento invalido. Tente novamente.")
-            return {"numero_documento": None}
+        # Descobre tipo de documento resolvido (CPF, CNPJ, RG, CNH, Outro)
+        tipo_doc_raw = tracker.get_slot("tipo_documento") or ""
+        tipo_doc = _resolver_tipo_doc(str(tipo_doc_raw) or "")
+
+        # Validação por tipo
+        if tipo_doc == "CPF":
+            if not (len(numero) == 11 and numero.isdigit()):
+                dispatcher.utter_message(text="CPF inválido. Informe 11 dígitos (apenas números).")
+                return {"numero_documento": None}
+
+        elif tipo_doc == "CNPJ":
+            if not (len(numero) == 14 and numero.isdigit()):
+                dispatcher.utter_message(text="CNPJ inválido. Informe 14 dígitos (apenas números).")
+                return {"numero_documento": None}
+
+        elif tipo_doc == "RG":
+            # RG muito curto é estranho; aceita letras e números
+            if len(numero) < 5:
+                dispatcher.utter_message(text="RG inválido. Informe um número de RG válido.")
+                return {"numero_documento": None}
+
+        elif tipo_doc == "CNH":
+            if not (len(numero) == 11 and numero.isdigit()):
+                dispatcher.utter_message(text="CNH inválida. Informe 11 dígitos (apenas números).")
+                return {"numero_documento": None}
+
+        else:
+            # Tipo "Outro" ou não identificado: validação mínima
+            if len(numero) < 3:
+                dispatcher.utter_message(text="Número de documento inválido. Tente novamente.")
+                return {"numero_documento": None}
 
         return {
-            "numero_documento": str(slot_value),
+            "numero_documento": valor_bruto,
             "pessoa_encontrada": False,
             "dados_pessoa": None,
             "pessoa_id": None,
@@ -491,7 +643,7 @@ class ValidateManifestacaoForm(FormValidationAction):
                 "pessoa_id": None,
             }
 
-        dispatcher.utter_message(text="Opcao invalida. Digite 1 para Sim ou 2 para Nao.")
+        dispatcher.utter_message(text="Opção inválida. Digite 1 para Sim ou 2 para Não.")
         return {"confirma_dados": None}
 
     def validate_nome_completo(
@@ -500,7 +652,7 @@ class ValidateManifestacaoForm(FormValidationAction):
         if slot_value and len(str(slot_value).strip()) >= 3:
             return {"nome_completo": str(slot_value).strip()}
 
-        dispatcher.utter_message(text="Nome invalido. Informe seu nome completo.")
+        dispatcher.utter_message(text="Nome inválido. Informe seu nome completo.")
         return {"nome_completo": None}
 
     def validate_email(
@@ -510,7 +662,7 @@ class ValidateManifestacaoForm(FormValidationAction):
         if slot_value and re.match(email_regex, str(slot_value).strip()):
             return {"email": str(slot_value).strip()}
 
-        dispatcher.utter_message(text="E-mail invalido. Informe um e-mail valido (ex: nome@email.com).")
+        dispatcher.utter_message(text="E-mail inválido. Informe um e-mail válido (ex: nome@email.com).")
         return {"email": None}
 
     def validate_telefone(
@@ -520,23 +672,23 @@ class ValidateManifestacaoForm(FormValidationAction):
         if len(telefone) >= 10:
             return {"telefone": telefone}
 
-        dispatcher.utter_message(text="Telefone invalido. Informe com DDD (ex: 62999999999).")
+        dispatcher.utter_message(text="Telefone inválido. Informe com DDD (ex: 62999999999).")
         return {"telefone": None}
 
     def validate_confirma_envio(
         self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
         valor = str(slot_value).strip().lower()
-        if valor in ("1", "sim", "s"):
+        if valor in ("Sim", "sim", "S"):
             return {"confirma_envio": "sim"}
-        if valor in ("2", "nao", "n"):
+        if valor in ("Não", "não", "N"):
             return {"confirma_envio": "cancelar"}
 
-        dispatcher.utter_message(text="Opcao invalida. Digite 1 para Sim ou 2 para Nao.")
+        dispatcher.utter_message(text="Opção inválida. Selecione Sim ou Não.")
         return {"confirma_envio": None}
 
 
-# --- Action: Enviar Manifestacao ---
+# --- Action: Enviar Manifestação ---
 
 class ActionEnviarManifestacao(Action):
     def name(self) -> Text:
@@ -546,12 +698,20 @@ class ActionEnviarManifestacao(Action):
         confirma = tracker.get_slot("confirma_envio")
         if confirma == "cancelar":
             dispatcher.utter_message(
-                text=f"Manifestacao cancelada.\n\nO que deseja fazer agora?\n\n{MENU_OPCOES}"
+                text=f"Manifestação cancelada."
             )
         else:
             dispatcher.utter_message(
-                text=f"Manifestacao registrada com sucesso!\nObrigado por utilizar a Ouvidoria.\n\nO que deseja fazer agora?\n\n{MENU_OPCOES}"
+                text=f"Manifestação registrada com sucesso!\nObrigado por utilizar a Ouvidoria."
             )
+
+        dispatcher.utter_message(
+            json_message={
+                "opcoes": MENU_OPCOES_2,
+                "mensagem": "O que deseja fazer agora?",
+                "tipo_msn": "interactive-reply"
+            }
+        )
 
         return [
             SlotSet("tipo_manifestacao", None),
